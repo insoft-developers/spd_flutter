@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1025836771007",
+    "project_id": "star-pro-domination",
+    "storage_bucket": "star-pro-domination.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1025836771007:android:2119d1e41110ee407c480a",
+        "android_client_info": {
+          "package_name": "com.insoft.spd"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAo9akBJcZQGSzqc7Es8ad2dJaE4GAd0g8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
