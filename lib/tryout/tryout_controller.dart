@@ -29,6 +29,7 @@ class TryoutController extends GetxController {
   var isDone = List.empty().obs;
   var navLoading = false.obs;
   var userAnswers = <String>[].obs;
+  var savedAnswers = <String>[].obs;
 
   var pilihA = false.obs;
   var pilihB = false.obs;
@@ -77,9 +78,7 @@ class TryoutController extends GetxController {
       final seconds = myDuration.inSeconds - reduceSecondsBy;
       if (seconds < 0) {
         countdownTimer!.cancel();
-        Get.to(() => TryoutSelesai(
-              idSession: idSession,
-            ));
+        Get.to(() => TryoutSelesai(idSession: idSession));
       } else {
         myDuration = Duration(seconds: seconds);
         String strDigits(int n) => n.toString().padLeft(2, '0');
@@ -107,9 +106,7 @@ class TryoutController extends GetxController {
       final seconds = myDuration.inSeconds - reduceSecondsBy;
       if (seconds < 0) {
         countdownTimer!.cancel();
-        Get.to(() => TryoutSelesai(
-              idSession: idSession,
-            ));
+        Get.to(() => TryoutSelesai(idSession: idSession));
       } else {
         myDuration = Duration(seconds: seconds);
         String strDigits(int n) => n.toString().padLeft(2, '0');
@@ -143,6 +140,9 @@ class TryoutController extends GetxController {
   void pilihJawaban(String pilihan) {
     jawabanUser.value = pilihan;
     userAnswers[soalIndex.value] = pilihan;
+    if (savedAnswers[soalIndex.value].isEmpty) {
+      savedAnswers[soalIndex.value] = '0';
+    }
 
     pilihA(pilihan == 'a');
     pilihB(pilihan == 'b');
@@ -152,7 +152,7 @@ class TryoutController extends GetxController {
   }
 
   void restoreJawaban() {
-    var currentAnswer = userAnswers[soalIndex.value];
+    var currentAnswer = savedAnswers[soalIndex.value];
     pilihA(currentAnswer == 'a');
     pilihB(currentAnswer == 'b');
     pilihC(currentAnswer == 'c');
@@ -164,58 +164,21 @@ class TryoutController extends GetxController {
   void checkAnswer(int idSession, int idSoal) async {
     if (soalIndex.value >= 0 && soalIndex.value < soalList.length) {
       restoreJawaban();
-      // var data = {'id_soal': idSoal, 'id_session': idSession};
-      // var res = await Network().auth(data, '/tryout_check_answer');
-      // var body = await json.decode(res.body);
-      // if (body['success']) {
-      //   print(body);
-      //   var jawabanUser = body['message'];
-      //   if (jawabanUser == 'a') {
-      //     pilihA(true);
-      //     pilihB(false);
-      //     pilihC(false);
-      //     pilihD(false);
-      //     pilihE(false);
-      //   } else if (jawabanUser == 'b') {
-      //     pilihA(false);
-      //     pilihB(true);
-      //     pilihC(false);
-      //     pilihD(false);
-      //     pilihE(false);
-      //   } else if (jawabanUser == 'c') {
-      //     pilihA(false);
-      //     pilihB(false);
-      //     pilihC(true);
-      //     pilihD(false);
-      //     pilihE(false);
-      //   } else if (jawabanUser == 'd') {
-      //     pilihA(false);
-      //     pilihB(false);
-      //     pilihC(false);
-      //     pilihD(true);
-      //     pilihE(false);
-      //   } else if (jawabanUser == 'e') {
-      //     pilihA(false);
-      //     pilihB(false);
-      //     pilihC(false);
-      //     pilihD(false);
-      //     pilihE(true);
-      //   } else {
-      //     pilihA(false);
-      //     pilihB(false);
-      //     pilihC(false);
-      //     pilihD(false);
-      //     pilihE(false);
-      //   }
-      // }
     }
   }
 
-  Future<bool> selanjutnya(int idSession, int idUser, int idSoal, String noSoal,
-      String jawabanUser, int statusJawaban, int model) async {
+  Future<bool> selanjutnya(
+    int idSession,
+    int idUser,
+    int idSoal,
+    String noSoal,
+    String jawabanUser,
+    int statusJawaban,
+    int model,
+  ) async {
     // ignore: unrelated_type_equality_checks
-
-    print(jawabanUser);
+    
+    
     if (pilihA == false &&
         pilihB == false &&
         pilihC == false &&
@@ -232,20 +195,17 @@ class TryoutController extends GetxController {
         'no_soal': noSoal,
         'jawaban_user': jawabanUser,
         'status_jawaban': statusJawaban,
-        'waktu_selesai': waktu.value
+        'waktu_selesai': waktu.value,
       };
 
       var res = await Network().auth(data, '/tryout_answer');
       var body = await json.decode(res.body);
       if (body['success']) {
+        savedAnswers[soalIndex.value] = jawabanUser;
+
         if (model == 1) {
           soalIndex.value = soalIndex.value + 1;
           restoreJawaban();
-          // pilihA(false);
-          // pilihB(false);
-          // pilihC(false);
-          // pilihD(false);
-          // pilihE(false);
         }
 
         if (model == 3) {
@@ -259,8 +219,14 @@ class TryoutController extends GetxController {
     }
   }
 
-  void tryoutAnswer(int idSession, int idUser, int idSoal, String noSoal,
-      String jawabanUser, int statusJawaban) async {}
+  void tryoutAnswer(
+    int idSession,
+    int idUser,
+    int idSoal,
+    String noSoal,
+    String jawabanUser,
+    int statusJawaban,
+  ) async {}
 
   bool lewati() {
     soalIndex.value = soalIndex.value + 1;
@@ -269,6 +235,10 @@ class TryoutController extends GetxController {
     pilihC(false);
     pilihD(false);
     pilihE(false);
+
+    print(jawabanUser.value);
+    print(savedAnswers);
+    print(userAnswers);
 
     return true;
   }
@@ -283,12 +253,7 @@ class TryoutController extends GetxController {
   bool sebelumnya() {
     soalIndex.value = soalIndex.value - 1;
     restoreJawaban();
-    // pilihA(false);
-    // pilihB(false);
-    // pilihC(false);
-    // pilihD(false);
-    // pilihE(false);
-    // isLast(false);
+    isLast(false);
     return true;
   }
 
@@ -310,7 +275,8 @@ class TryoutController extends GetxController {
     if (body['success']) {
       soalList.value = body['data'];
       userAnswers.value = List.generate(soalList.length, (_) => '');
-      print(userAnswers);
+      savedAnswers.value = List.generate(soalList.length, (_) => '');
+      print(body['data']);
     }
   }
 
@@ -353,12 +319,16 @@ class TryoutController extends GetxController {
   }
 
   Future tryoutReportAdd(
-      int idSoal, int idUser, String isiLaporan, String kategori) async {
+    int idSoal,
+    int idUser,
+    String isiLaporan,
+    String kategori,
+  ) async {
     var data = {
       'idSoal': idSoal,
       'idUser': idUser,
       'isiLaporan': isiLaporan,
-      'kategori': kategori
+      'kategori': kategori,
     };
 
     var res = await Network().auth(data, '/tryout_report_add');
