@@ -817,29 +817,29 @@ class _TryoutStartState extends State<TryoutStart> {
                             Text("Kembali"),
                           ],
                         )),
-                    // ElevatedButton(
-                    //     style: ElevatedButton.styleFrom(primary: Colors.orange),
-                    //     onPressed: () {
-                    //       bool isLimit = _tryoutController.checkLimit();
-                    //       if (isLimit) {
-                    //         showNotifSelesai(context);
-                    //       } else {
-                    //         var statusLewati = _tryoutController.lewati();
-                    //         if (statusLewati) {
-                    //           _tryoutController.checkAnswer(
-                    //               widget.idSession,
-                    //               _tryoutController.soalList[
-                    //                   _tryoutController.soalIndex.value]['id']);
-                    //         }
-                    //       }
-                    //       setState(() {});
-                    //     },
-                    //     child: Row(
-                    //       children: const [
-                    //         Text("Selanjutnya"),
-                    //         Icon(Icons.arrow_right),
-                    //       ],
-                    //     )),
+                    ElevatedButton(
+                        style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
+                        onPressed: () {
+                          bool isLimit = _tryoutController.checkLimit();
+                          if (isLimit) {
+                            showNotifSelesai(context);
+                          } else {
+                            var statusLewati = _tryoutController.lewati();
+                            if (statusLewati) {
+                              _tryoutController.checkAnswer(
+                                  widget.idSession,
+                                  _tryoutController.soalList[
+                                      _tryoutController.soalIndex.value]['id']);
+                            }
+                          }
+                          setState(() {});
+                        },
+                        child: Row(
+                          children: const [
+                            Text("Lewati"),
+                            Icon(Icons.arrow_right),
+                          ],
+                        )),
                     SizedBox(
                       width: MediaQuery.of(context).size.width * 1 / 3,
                       child: ElevatedButton(
@@ -878,7 +878,7 @@ class _TryoutStartState extends State<TryoutStart> {
                           },
                           child: Row(children: const [
                             Icon(Icons.save),
-                            Text(" Next"),
+                            Text(" Simpan"),
                           ])),
                     ),
                   ],

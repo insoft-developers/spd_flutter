@@ -329,6 +329,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     var res = await Network().auth(data, '/login');
     var body = json.decode(res.body);
+    print("BODY : " + body.toString());
     if (body['success']) {
       SharedPreferences localStorage = await SharedPreferences.getInstance();
       localStorage.setString('token', json.encode(body['token']));
@@ -340,7 +341,7 @@ class _LoginScreenState extends State<LoginScreen> {
     } else {
       showToast(body['message'].toString());
     }
-    print("BODY : " + body.toString());
+    
 
     setState(() {
       _isLoading = false;
