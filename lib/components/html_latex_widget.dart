@@ -7,10 +7,10 @@ class HtmlLatexWidget extends StatelessWidget {
   final TextStyle? textStyle;
 
   const HtmlLatexWidget({
-    Key? key,
+    super.key,
     required this.html,
     this.textStyle,
-  }) : super(key: key);
+  });
 
   bool _isBlockFormula(String latex) {
     return latex.length > 40 ||

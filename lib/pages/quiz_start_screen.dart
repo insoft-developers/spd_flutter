@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:Genzi/components/html_latex_widget.dart';
 import 'package:Genzi/constants/constants.dart';
 import 'package:Genzi/controller/quiz_controller.dart';
 import 'package:Genzi/pages/quiz_finish.dart';
@@ -189,11 +190,9 @@ class _QuizStartScreenState extends State<QuizStartScreen> {
                                         children: [
                                           Obx(
                                             () => Text(
-                                              "SOAL No. " +
-                                                  snapshot.data['data'][
+                                              "SOAL No. ${snapshot.data['data'][
                                                           _kuisController.noSoal
-                                                              .value]['no_kuis']
-                                                      .toString(),
+                                                              .value]['no_kuis']}",
                                               style: TextStyle(
                                                   color: warnaTulisan,
                                                   fontSize: 18,
@@ -212,6 +211,18 @@ class _QuizStartScreenState extends State<QuizStartScreen> {
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.center,
                                                 children: [
+                                                  HtmlLatexWidget(
+                                                    html:snapshot.data['data'][
+                                                            _kuisController
+                                                                .noSoal.value]
+                                                            ['soal_kuis']
+                                                        .toString(),
+                                                    textStyle: TextStyle(
+                                                        fontSize: 18,
+                                                        color: warnaTulisan,
+                                                        fontFamily:
+                                                            'PoppinsBold'),
+                                                  ),
                                                   snapshot.data['data'][
                                                                   _kuisController
                                                                       .noSoal
@@ -240,13 +251,13 @@ class _QuizStartScreenState extends State<QuizStartScreen> {
                                                           ),
                                                         )
                                                       : const SizedBox(),
-                                                  Text(
-                                                    snapshot.data['data'][
+                                                  HtmlLatexWidget(
+                                                    html:snapshot.data['data'][
                                                             _kuisController
                                                                 .noSoal.value]
-                                                            ['soal_kuis']
+                                                            ['soal_bawah']
                                                         .toString(),
-                                                    style: TextStyle(
+                                                    textStyle: TextStyle(
                                                         fontSize: 18,
                                                         color: warnaTulisan,
                                                         fontFamily:
@@ -334,12 +345,12 @@ class _QuizStartScreenState extends State<QuizStartScreen> {
                                                           ),
                                                         )
                                                       : const SizedBox(),
-                                                  Text(
-                                                      snapshot.data['data'][
+                                                  HtmlLatexWidget(
+                                                      html:snapshot.data['data'][
                                                               _kuisController
                                                                   .noSoal.value]
                                                           ['jawaban_a'],
-                                                      style: TextStyle(
+                                                      textStyle: TextStyle(
                                                           fontFamily: 'Poppins',
                                                           fontSize: 18,
                                                           color: _kuisController
@@ -418,12 +429,12 @@ class _QuizStartScreenState extends State<QuizStartScreen> {
                                                           ),
                                                         )
                                                       : const SizedBox(),
-                                                  Text(
-                                                      snapshot.data['data'][
+                                                  HtmlLatexWidget(
+                                                      html:snapshot.data['data'][
                                                               _kuisController
                                                                   .noSoal.value]
                                                           ['jawaban_b'],
-                                                      style: TextStyle(
+                                                      textStyle: TextStyle(
                                                           fontFamily: 'Poppins',
                                                           fontSize: 18,
                                                           color: _kuisController
@@ -500,12 +511,12 @@ class _QuizStartScreenState extends State<QuizStartScreen> {
                                                           ),
                                                         )
                                                       : const SizedBox(),
-                                                  Text(
-                                                      snapshot.data['data'][
+                                                  HtmlLatexWidget(
+                                                      html:snapshot.data['data'][
                                                               _kuisController
                                                                   .noSoal.value]
                                                           ['jawaban_c'],
-                                                      style: TextStyle(
+                                                      textStyle: TextStyle(
                                                           fontFamily: 'Poppins',
                                                           fontSize: 18,
                                                           color: _kuisController
@@ -580,12 +591,12 @@ class _QuizStartScreenState extends State<QuizStartScreen> {
                                                         ),
                                                       )
                                                     : const SizedBox(),
-                                                Text(
-                                                    snapshot.data['data'][
+                                                HtmlLatexWidget(
+                                                    html:snapshot.data['data'][
                                                             _kuisController
                                                                 .noSoal.value]
                                                         ['jawaban_d'],
-                                                    style: TextStyle(
+                                                    textStyle: TextStyle(
                                                         fontFamily: 'Poppins',
                                                         fontSize: 18,
                                                         color: _kuisController
@@ -659,12 +670,12 @@ class _QuizStartScreenState extends State<QuizStartScreen> {
                                                         ),
                                                       )
                                                     : const SizedBox(),
-                                                Text(
-                                                    snapshot.data['data'][
+                                                HtmlLatexWidget(
+                                                    html:snapshot.data['data'][
                                                             _kuisController
                                                                 .noSoal.value]
                                                         ['jawaban_e'],
-                                                    style: TextStyle(
+                                                    textStyle: TextStyle(
                                                         fontFamily: 'Poppins',
                                                         fontSize: 18,
                                                         color: _kuisController

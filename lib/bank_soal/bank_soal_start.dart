@@ -1,6 +1,7 @@
 import 'package:Genzi/bank_soal/bank_soal_controller.dart';
 import 'package:Genzi/bank_soal/bank_soal_report.dart';
 import 'package:Genzi/bank_soal/bank_soal_selesai.dart';
+import 'package:Genzi/components/html_latex_widget.dart';
 import 'package:Genzi/components/photo_view.dart';
 import 'package:Genzi/constants/constants.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -280,6 +281,18 @@ class _BankSoalStartState extends State<BankSoalStart> {
                                   child: Column(
                                     children: [
                                       Obx(
+                                        () => HtmlLatexWidget(
+                                            html:_bankSoalController.soalList[
+                                                    _bankSoalController
+                                                        .soalIndex
+                                                        .value]['soal']
+                                                .toString(),
+                                            textStyle: TextStyle(
+                                                color: warnaTulisan,
+                                                fontFamily: 'Poppins',
+                                                fontSize: 16)),
+                                      ),
+                                      Obx(
                                         () => _bankSoalController.soalList[
                                                         _bankSoalController
                                                             .soalIndex.value]
@@ -323,13 +336,13 @@ class _BankSoalStartState extends State<BankSoalStart> {
                                             : Container(),
                                       ),
                                       Obx(
-                                        () => Text(
-                                            _bankSoalController.soalList[
+                                        () => HtmlLatexWidget(
+                                            html:_bankSoalController.soalList[
                                                     _bankSoalController
                                                         .soalIndex
-                                                        .value]['soal']
-                                                .toString(),
-                                            style: TextStyle(
+                                                        .value]['soal_bawah']
+                                                ?? '',
+                                            textStyle: TextStyle(
                                                 color: warnaTulisan,
                                                 fontFamily: 'Poppins',
                                                 fontSize: 16)),
@@ -399,15 +412,15 @@ class _BankSoalStartState extends State<BankSoalStart> {
                                                           )
                                                         : Container(),
                                                   ),
-                                                  Obx(() => Text(
-                                                        _bankSoalController
+                                                  Obx(() => HtmlLatexWidget(
+                                                        html:_bankSoalController
                                                             .soalList[
                                                                 _bankSoalController
                                                                     .soalIndex
                                                                     .value]
                                                                 ['jawaban_a']
                                                             .toString(),
-                                                        style: TextStyle(
+                                                        textStyle: TextStyle(
                                                             color: _bankSoalController
                                                                     .pilihA
                                                                     .value
@@ -486,15 +499,15 @@ class _BankSoalStartState extends State<BankSoalStart> {
                                                           )
                                                         : Container(),
                                                   ),
-                                                  Obx(() => Text(
-                                                        _bankSoalController
+                                                  Obx(() => HtmlLatexWidget(
+                                                        html:_bankSoalController
                                                             .soalList[
                                                                 _bankSoalController
                                                                     .soalIndex
                                                                     .value]
                                                                 ['jawaban_b']
                                                             .toString(),
-                                                        style: TextStyle(
+                                                        textStyle: TextStyle(
                                                             color: _bankSoalController
                                                                     .pilihB
                                                                     .value
@@ -574,15 +587,15 @@ class _BankSoalStartState extends State<BankSoalStart> {
                                                         : Container(),
                                                   ),
                                                   Obx(
-                                                    () => Text(
-                                                      _bankSoalController
+                                                    () => HtmlLatexWidget(
+                                                      html:_bankSoalController
                                                           .soalList[
                                                               _bankSoalController
                                                                   .soalIndex
                                                                   .value]
                                                               ['jawaban_c']
                                                           .toString(),
-                                                      style: TextStyle(
+                                                      textStyle: TextStyle(
                                                           color: _bankSoalController
                                                                   .pilihC.value
                                                               ? warnaTulisanJawaban
@@ -661,15 +674,15 @@ class _BankSoalStartState extends State<BankSoalStart> {
                                                         : Container(),
                                                   ),
                                                   Obx(
-                                                    () => Text(
-                                                      _bankSoalController
+                                                    () => HtmlLatexWidget(
+                                                      html:_bankSoalController
                                                           .soalList[
                                                               _bankSoalController
                                                                   .soalIndex
                                                                   .value]
                                                               ['jawaban_d']
                                                           .toString(),
-                                                      style: TextStyle(
+                                                      textStyle: TextStyle(
                                                           color: _bankSoalController
                                                                   .pilihD.value
                                                               ? warnaTulisanJawaban
@@ -748,15 +761,15 @@ class _BankSoalStartState extends State<BankSoalStart> {
                                                         : Container(),
                                                   ),
                                                   Obx(
-                                                    () => Text(
-                                                      _bankSoalController
+                                                    () => HtmlLatexWidget(
+                                                     html: _bankSoalController
                                                           .soalList[
                                                               _bankSoalController
                                                                   .soalIndex
                                                                   .value]
                                                               ['jawaban_e']
                                                           .toString(),
-                                                      style: TextStyle(
+                                                      textStyle: TextStyle(
                                                           color: _bankSoalController
                                                                   .pilihE.value
                                                               ? warnaTulisanJawaban
@@ -831,29 +844,29 @@ class _BankSoalStartState extends State<BankSoalStart> {
                             Text("Kembali"),
                           ],
                         )),
-                    // ElevatedButton(
-                    //     style: ElevatedButton.styleFrom(primary: Colors.orange),
-                    //     onPressed: () {
-                    //       bool isLimit = _bankSoalController.checkLimit();
-                    //       if (isLimit) {
-                    //         showNotifSelesai(context);
-                    //       } else {
-                    //         var statusLewati = _bankSoalController.lewati();
-                    //         if (statusLewati) {
-                    //           _bankSoalController.checkAnswer(
-                    //               widget.idSession,
-                    //               _bankSoalController.soalList[
-                    //                       _bankSoalController.soalIndex.value]
-                    //                   ['id']);
-                    //         }
-                    //       }
-                    //     },
-                    //     child: Row(
-                    //       children: const [
-                    //         Text("Selanjutnya"),
-                    //         Icon(Icons.arrow_right),
-                    //       ],
-                    //     )),
+                    ElevatedButton(
+                        style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
+                        onPressed: () {
+                          bool isLimit = _bankSoalController.checkLimit();
+                          if (isLimit) {
+                            showNotifSelesai(context);
+                          } else {
+                            var statusLewati = _bankSoalController.lewati();
+                            if (statusLewati) {
+                              _bankSoalController.checkAnswer(
+                                  widget.idSession,
+                                  _bankSoalController.soalList[
+                                          _bankSoalController.soalIndex.value]
+                                      ['id']);
+                            }
+                          }
+                        },
+                        child: Row(
+                          children: const [
+                            Text("Lewati"),
+                            Icon(Icons.arrow_right),
+                          ],
+                        )),
 
                     SizedBox(
                       width: MediaQuery.of(context).size.width * 1 / 3,
@@ -898,7 +911,7 @@ class _BankSoalStartState extends State<BankSoalStart> {
                           },
                           child: Row(children: const [
                             Icon(Icons.save),
-                            Text(" Next"),
+                            Text(" Simpan"),
                           ])),
                     ),
                   ],

@@ -32,6 +32,9 @@ class BankSoalController extends GetxController {
   var isDone = List.empty().obs;
   var navLoading = false.obs;
 
+  var userAnswers = <String>[].obs;
+  var savedAnswers = <String>[].obs;
+
   var pilihA = false.obs;
   var pilihB = false.obs;
   var pilihC = false.obs;
@@ -60,8 +63,8 @@ class BankSoalController extends GetxController {
   }
 
   void goto(int index, int idSession, int idSoal) {
-    checkAnswer(idSession, idSoal);
     soalIndex.value = index;
+    restoreJawaban();
     isLast(false);
   }
 
@@ -78,9 +81,7 @@ class BankSoalController extends GetxController {
       final seconds = myDuration.inSeconds + reduceSecondsBy;
       if (seconds > 100000) {
         countdownTimer!.cancel();
-        Get.to(() => BankSoalSelesai(
-              idSession: idSession,
-            ));
+        Get.to(() => BankSoalSelesai(idSession: idSession));
       } else {
         myDuration = Duration(seconds: seconds);
         String strDigits(int n) => n.toString().padLeft(2, '0');
@@ -96,12 +97,16 @@ class BankSoalController extends GetxController {
   }
 
   Future bankSoalReportAdd(
-      int idSoal, int idUser, String isiLaporan, String kategori) async {
+    int idSoal,
+    int idUser,
+    String isiLaporan,
+    String kategori,
+  ) async {
     var data = {
       'idSoal': idSoal,
       'idUser': idUser,
       'isiLaporan': isiLaporan,
-      'kategori': kategori
+      'kategori': kategori,
     };
 
     var res = await Network().auth(data, '/tryout_report_add');
@@ -141,8 +146,15 @@ class BankSoalController extends GetxController {
     }
   }
 
-  Future<bool> selanjutnya(int idSession, int idUser, int idSoal, String noSoal,
-      String jawabanUser, int statusJawaban, int model) async {
+  Future<bool> selanjutnya(
+    int idSession,
+    int idUser,
+    int idSoal,
+    String noSoal,
+    String jawabanUser,
+    int statusJawaban,
+    int model,
+  ) async {
     // ignore: unrelated_type_equality_checks
 
     if (pilihA == false &&
@@ -161,12 +173,13 @@ class BankSoalController extends GetxController {
         'no_soal': noSoal,
         'jawaban_user': jawabanUser,
         'status_jawaban': statusJawaban,
-        'waktu_selesai': waktu.value
+        'waktu_selesai': waktu.value,
       };
 
       var res = await Network().auth(data, '/bank_soal_answer');
       var body = await json.decode(res.body);
       if (body['success']) {
+        savedAnswers[soalIndex.value] = jawabanUser;
         if (model == 1) {
           soalIndex.value = soalIndex.value + 1;
           pilihA(false);
@@ -187,72 +200,27 @@ class BankSoalController extends GetxController {
     }
   }
 
-  void checkAnswer(int idSession, int idSoal) async {
+  void checkAnswer(int idSession, int idSoal) {
     if (soalIndex.value >= 0 && soalIndex.value < soalList.length) {
-      var data = {'id_soal': idSoal, 'id_session': idSession};
-      var res = await Network().auth(data, '/bank_soal_check_answer');
-      var body = await json.decode(res.body);
-      if (body['success']) {
-        var jawabanUser = body['message'];
-        if (jawabanUser == 'a') {
-          pilihA(true);
-          pilihB(false);
-          pilihC(false);
-          pilihD(false);
-          pilihE(false);
-        } else if (jawabanUser == 'b') {
-          pilihA(false);
-          pilihB(true);
-          pilihC(false);
-          pilihD(false);
-          pilihE(false);
-        } else if (jawabanUser == 'c') {
-          pilihA(false);
-          pilihB(false);
-          pilihC(true);
-          pilihD(false);
-          pilihE(false);
-        } else if (jawabanUser == 'd') {
-          pilihA(false);
-          pilihB(false);
-          pilihC(false);
-          pilihD(true);
-          pilihE(false);
-        } else if (jawabanUser == 'e') {
-          pilihA(false);
-          pilihB(false);
-          pilihC(false);
-          pilihD(false);
-          pilihE(true);
-        } else {
-          pilihA(false);
-          pilihB(false);
-          pilihC(false);
-          pilihD(false);
-          pilihE(false);
-        }
-      }
+      restoreJawaban();
     }
   }
 
   bool lewati() {
     soalIndex.value = soalIndex.value + 1;
-    pilihA(false);
-    pilihB(false);
-    pilihC(false);
-    pilihD(false);
-    pilihE(false);
+
+    restoreJawaban();
+
     return true;
   }
 
   bool sebelumnya() {
     soalIndex.value = soalIndex.value - 1;
-    pilihA(false);
-    pilihB(false);
-    pilihC(false);
-    pilihD(false);
-    pilihE(false);
+
+    restoreJawaban();
+
     isLast(false);
+
     return true;
   }
 
@@ -273,50 +241,44 @@ class BankSoalController extends GetxController {
   }
 
   void pilihJawaban(String pilihan) {
-    if (pilihan == 'a') {
-      jawabanUser.value = 'a';
-      pilihA(true);
-      pilihB(false);
-      pilihC(false);
-      pilihD(false);
-      pilihE(false);
-    } else if (pilihan == 'b') {
-      jawabanUser.value = 'b';
-      pilihA(false);
-      pilihB(true);
-      pilihC(false);
-      pilihD(false);
-      pilihE(false);
-    } else if (pilihan == 'c') {
-      jawabanUser.value = 'c';
-      pilihA(false);
-      pilihB(false);
-      pilihC(true);
-      pilihD(false);
-      pilihE(false);
-    } else if (pilihan == 'd') {
-      jawabanUser.value = 'd';
-      pilihA(false);
-      pilihB(false);
-      pilihC(false);
-      pilihD(true);
-      pilihE(false);
-    } else if (pilihan == 'e') {
-      jawabanUser.value = 'e';
-      pilihA(false);
-      pilihB(false);
-      pilihC(false);
-      pilihD(false);
-      pilihE(true);
+    jawabanUser.value = pilihan;
+
+    userAnswers[soalIndex.value] = pilihan;
+
+    if (savedAnswers[soalIndex.value].isEmpty) {
+      savedAnswers[soalIndex.value] = '0';
     }
+
+    pilihA(pilihan == 'a');
+    pilihB(pilihan == 'b');
+    pilihC(pilihan == 'c');
+    pilihD(pilihan == 'd');
+    pilihE(pilihan == 'e');
   }
 
   void fetchBankSoalDetail(String idBankSoal) async {
     var res = await Network().getData('/bank_soal_detail/' + idBankSoal);
     var body = await json.decode(res.body);
+
     if (body['success']) {
       soalList.value = body['data'];
+
+      userAnswers.value = List.generate(soalList.length, (_) => '');
+
+      savedAnswers.value = List.generate(soalList.length, (_) => '');
     }
+  }
+
+  void restoreJawaban() {
+    var currentAnswer = savedAnswers[soalIndex.value];
+
+    pilihA(currentAnswer == 'a');
+    pilihB(currentAnswer == 'b');
+    pilihC(currentAnswer == 'c');
+    pilihD(currentAnswer == 'd');
+    pilihE(currentAnswer == 'e');
+
+    jawabanUser.value = currentAnswer;
   }
 
   void stopTimer() {
@@ -338,9 +300,7 @@ class BankSoalController extends GetxController {
       final seconds = myDuration.inSeconds + reduceSecondsBy;
       if (seconds > 100000) {
         countdownTimer!.cancel();
-        Get.to(() => BankSoalSelesai(
-              idSession: idSession,
-            ));
+        Get.to(() => BankSoalSelesai(idSession: idSession));
       } else {
         myDuration = Duration(seconds: seconds);
         String strDigits(int n) => n.toString().padLeft(2, '0');
