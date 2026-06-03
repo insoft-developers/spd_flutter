@@ -14,7 +14,9 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp();
+  if (!kIsWeb) {
+    await Firebase.initializeApp();
+  }
 
   print('Handling a background message ${message.messageId}');
 }
@@ -25,11 +27,12 @@ FlutterLocalNotificationsPlugin? flutterLocalNotificationsPlugin;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  await FirebaseMessaging.instance.subscribeToTopic("spd");
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   if (!kIsWeb) {
+    await Firebase.initializeApp();
+    await FirebaseMessaging.instance.subscribeToTopic("spd");
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
     channel = const AndroidNotificationChannel(
       'high_importance_channel',
       'High Importance Notifications',
@@ -43,17 +46,21 @@ Future<void> main() async {
           AndroidFlutterLocalNotificationsPlugin
         >()
         ?.createNotificationChannel(channel!);
+
     await FirebaseMessaging.instance
         .setForegroundNotificationPresentationOptions(
           alert: true,
           badge: true,
           sound: true,
         );
+
     await FirebaseMessaging.instance.getInitialMessage();
   }
+
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(statusBarColor: Colors.blueAccent),
   );
+
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   runApp(
@@ -75,7 +82,10 @@ class _CheckAuthState extends State<CheckAuth> {
   bool isAuth = false;
 
   void requestPersmission() async {
+    if (kIsWeb) return;
+
     FirebaseMessaging messaging = FirebaseMessaging.instance;
+
     NotificationSettings settings = await messaging.requestPermission(
       alert: true,
       announcement: false,
@@ -98,44 +108,48 @@ class _CheckAuthState extends State<CheckAuth> {
 
   @override
   void initState() {
-    requestPersmission();
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      _notifController.getDataNotif();
-      _chatController.getChatPerson("");
-      RemoteNotification? notification = message.notification;
-      AndroidNotification? android = message.notification?.android;
-      if (notification != null && android != null && !kIsWeb) {
-        flutterLocalNotificationsPlugin?.show(
-          notification.hashCode,
-          notification.title,
-          notification.body,
-          NotificationDetails(
-            android: AndroidNotificationDetails(
-              channel!.id,
-              channel!.name,
+    super.initState();
 
-              icon: 'launch_background',
+    if (!kIsWeb) {
+      requestPersmission();
+
+      FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+        _notifController.getDataNotif();
+        _chatController.getChatPerson("");
+
+        RemoteNotification? notification = message.notification;
+        AndroidNotification? android = message.notification?.android;
+
+        if (notification != null && android != null) {
+          flutterLocalNotificationsPlugin?.show(
+            notification.hashCode,
+            notification.title,
+            notification.body,
+            NotificationDetails(
+              android: AndroidNotificationDetails(
+                channel!.id,
+                channel!.name,
+                icon: 'launch_background',
+              ),
             ),
-          ),
-        );
-        _chatController.setChatRoom(
-          int.parse(notification.title.toString()),
-          2,
-        );
-      }
-    });
+          );
 
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      _notifController.getDataNotif();
-      _chatController.getChatPerson("");
-      RemoteNotification? notification = message.notification;
-      AndroidNotification? android = message.notification?.android;
-      if (notification != null && android != null && !kIsWeb) {}
-    });
+          if (notification.title != null) {
+            _chatController.setChatRoom(
+              int.tryParse(notification.title.toString()) ?? 0,
+              2,
+            );
+          }
+        }
+      });
+
+      FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+        _notifController.getDataNotif();
+        _chatController.getChatPerson("");
+      });
+    }
 
     _checkIfLoggedIn();
-
-    super.initState();
   }
 
   void _checkIfLoggedIn() async {

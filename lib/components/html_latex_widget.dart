@@ -7,46 +7,148 @@ class HtmlLatexWidget extends StatelessWidget {
   final TextStyle? textStyle;
 
   const HtmlLatexWidget({
-    super.key,
+    Key? key,
     required this.html,
     this.textStyle,
-  });
+  }) : super(key: key);
+
+  bool _isBlockFormula(String latex) {
+    return latex.length > 40 ||
+        latex.contains(r'\frac') ||
+        latex.contains(r'\sqrt') ||
+        latex.contains(r'\sum') ||
+        latex.contains(r'\int') ||
+        latex.contains(r'\lim') ||
+        latex.contains('\n');
+  }
 
   @override
   Widget build(BuildContext context) {
     final unescape = HtmlUnescape();
-    final regex = RegExp(r'\\\((.*?)\\\)', dotAll: true);
 
-    final match = regex.firstMatch(html);
+    String content = html;
 
-    if (match != null) {
-      String latex = match.group(1)!;
+    // Handle CKEditor HTML
+    content = content
+        .replaceAll(
+          RegExp(r'<br\s*/?>', caseSensitive: false),
+          '\n',
+        )
+        .replaceAll(
+          RegExp(r'</p>', caseSensitive: false),
+          '\n',
+        )
+        .replaceAll(
+          RegExp(r'<p[^>]*>', caseSensitive: false),
+          '',
+        )
+        .replaceAll(
+          RegExp(r'</div>', caseSensitive: false),
+          '\n',
+        )
+        .replaceAll(
+          RegExp(r'<div[^>]*>', caseSensitive: false),
+          '',
+        );
 
-      String text = html
-          .replaceAll(RegExp(r'<[^>]*>'), '')
-          .replaceAll(match.group(0)!, '');
+    // Decode HTML entity
+    content = unescape.convert(content);
 
-      text = unescape.convert(text).trim();
+    final regex = RegExp(
+      r'\\\((.*?)\\\)',
+      dotAll: true,
+    );
 
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (text.isNotEmpty)
-            Text(
-              text,
-              style: textStyle,
+    List<Widget> blocks = [];
+    List<InlineSpan> currentInline = [];
+
+    int lastEnd = 0;
+
+    void flushInline() {
+      if (currentInline.isEmpty) return;
+
+      blocks.add(
+        RichText(
+          text: TextSpan(
+            style: textStyle ??
+                const TextStyle(
+                  color: Colors.black,
+                  fontSize: 16,
+                ),
+            children: List.from(currentInline),
+          ),
+        ),
+      );
+
+      currentInline.clear();
+    }
+
+    for (final match in regex.allMatches(content)) {
+      String before = content.substring(lastEnd, match.start);
+
+      // bersihkan tag html yang tersisa
+      before = before.replaceAll(
+        RegExp(r'<[^>]+>'),
+        '',
+      );
+
+      if (before.isNotEmpty) {
+        currentInline.add(
+          TextSpan(text: before),
+        );
+      }
+
+      final latex = (match.group(1) ?? '').trim();
+
+      if (_isBlockFormula(latex)) {
+        flushInline();
+
+        blocks.add(
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Math.tex(
+                latex,
+                textStyle: textStyle,
+              ),
             ),
-          const SizedBox(height: 10),
-          Math.tex(latex),
-        ],
+          ),
+        );
+      } else {
+        currentInline.add(
+          WidgetSpan(
+            alignment: PlaceholderAlignment.middle,
+            child: Math.tex(
+              latex,
+              mathStyle: MathStyle.text,
+              textStyle: textStyle,
+            ),
+          ),
+        );
+      }
+
+      lastEnd = match.end;
+    }
+
+    String remaining = content.substring(lastEnd);
+
+    remaining = remaining.replaceAll(
+      RegExp(r'<[^>]+>'),
+      '',
+    );
+
+    if (remaining.isNotEmpty) {
+      currentInline.add(
+        TextSpan(text: remaining),
       );
     }
 
-    return Text(
-      unescape.convert(
-        html.replaceAll(RegExp(r'<[^>]*>'), ''),
-      ),
-      style: textStyle,
+    flushInline();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: blocks,
     );
   }
 }
