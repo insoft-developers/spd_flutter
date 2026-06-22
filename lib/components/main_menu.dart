@@ -8,6 +8,7 @@ import 'package:Genzi/pages/menu_webview.dart';
 import 'package:Genzi/pages/quiz_list.dart';
 import 'package:Genzi/question/question_list.dart';
 import 'package:Genzi/setting/setting_screen.dart';
+import 'package:Genzi/tka/tka.dart';
 import 'package:Genzi/tkp/tkp.dart';
 
 import 'package:Genzi/tryout/tryout_screen.dart';
@@ -79,19 +80,24 @@ class _MainMenuState extends State<MainMenu> {
                       Get.to(() => const QuestionList());
                     }
 
-                    if (data['id'].toString() == '9') {
+                    if (data['id'].toString() == '10') {
                       Get.to(() => const SettingScreen());
                     }
+
+                    if (data['id'].toString() == '7') {
+                      Get.to(() => const TkaPage());
+                    }
+
 
                     if (data['id'].toString() == '6') {
                       Get.to(() => const Tkp());
                     }
 
-                    if (data['id'].toString() == '7') {
+                    if (data['id'].toString() == '8') {
                       Get.to(() => MenuWebView(url: data['name']));
                     }
 
-                    if (data['id'].toString() == '8') {
+                    if (data['id'].toString() == '9') {
                       Get.to(() => MenuWebView(url: data['name']));
                     }
                   },
