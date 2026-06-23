@@ -15,6 +15,9 @@ class HistoryController extends GetxController {
   var tkpList = List.empty().obs;
   var tkpLoading = false.obs;
 
+  var tkaList = List.empty().obs;
+  var tkaLoading = false.obs;
+
   var bankList = List.empty().obs;
 
   var laporList = List.empty().obs;
@@ -92,6 +95,23 @@ class HistoryController extends GetxController {
       if (body['success']) {
         bankLoading(false);
         bankList.value = body['data'];
+      }
+    }
+  }
+
+
+  void getSessionTka() async {
+    tkaLoading(true);
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    var user = jsonDecode(localStorage.getString('user')!);
+    if (user != null) {
+      String idUser = user['id'].toString();
+      var res = await Network().getData('/tka_history/$idUser');
+      var body = await jsonDecode(res.body);
+      if (body['success']) {
+        tkaLoading(false);
+        tkaList.value = body['data'];
+       
       }
     }
   }

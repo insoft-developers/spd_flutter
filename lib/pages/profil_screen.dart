@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:Genzi/constants/constants.dart';
 import 'package:Genzi/controller/contact_controller.dart';
 import 'package:Genzi/controller/profil_controller.dart';
-import 'package:Genzi/pages/login_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -253,7 +252,9 @@ class _ProfilScreenState extends State<ProfilScreen> {
                               padding:
                                   const EdgeInsets.fromLTRB(10, 15, 10, 15),
                               child: const Text("LOGOUT"))),
-                    )
+                    ),
+                    Center(child: Text("VERSION : ${Contants.VERSION}", style: TextStyle(fontSize: 16),)),
+                    const SizedBox(height: 20,)
                   ],
                 ),
               ),

@@ -1,13 +1,14 @@
 import 'package:Genzi/history/banksoal_history.dart';
 import 'package:Genzi/history/lapor.dart';
 import 'package:Genzi/history/quiz_history.dart';
+import 'package:Genzi/history/tka_history.dart';
 import 'package:Genzi/history/tkp_history.dart';
 import 'package:Genzi/history/tryout_history.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class HistoryScreen extends StatefulWidget {
-  const HistoryScreen({Key? key}) : super(key: key);
+  const HistoryScreen({super.key});
 
   @override
   State<HistoryScreen> createState() => _HistoryScreenState();
@@ -164,7 +165,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
               margin: const EdgeInsets.fromLTRB(10, 10, 10, 10),
               shape: const RoundedRectangleBorder(
                 side: BorderSide(
-                  color: Colors.lightBlue,
+                  color: Colors.grey,
                 ),
                 borderRadius: BorderRadius.all(Radius.circular(10)),
               ),
@@ -209,7 +210,53 @@ class _HistoryScreenState extends State<HistoryScreen> {
               margin: const EdgeInsets.fromLTRB(10, 10, 10, 10),
               shape: const RoundedRectangleBorder(
                 side: BorderSide(
-                  color: Colors.lightBlue,
+                  color: Colors.purpleAccent,
+                ),
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+              ),
+              child: Container(
+                height: 150,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    gradient: const LinearGradient(
+                        colors: [Colors.purpleAccent, Colors.white])),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    splashColor: Colors.amber,
+                    onTap: () {
+                      Get.to(() => const TkaHistory());
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                            margin: const EdgeInsets.only(left: 20.0),
+                            child: const Text(
+                              "TKA YANG DIIKUTI",
+                              style: TextStyle(
+                                  fontFamily: 'PoppinsSemiBold', fontSize: 17),
+                            )),
+                        Container(
+                          margin: const EdgeInsets.only(right: 20.0),
+                          child: Image.asset(
+                            "images/kuisok.png",
+                            height: 70,
+                            width: 70,
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            
+            Card(
+              margin: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+              shape: const RoundedRectangleBorder(
+                side: BorderSide(
+                  color: Colors.lightGreen,
                 ),
                 borderRadius: BorderRadius.all(Radius.circular(10)),
               ),

@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:Genzi/bank_soal/bank_soal_selesai.dart';
 import 'package:Genzi/network/api.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -45,6 +46,12 @@ class BankSoalController extends GetxController {
   var jawabanUser = "".obs;
   var isLast = false.obs;
 
+  VoidCallback? refreshPage;
+
+  void refreshUI() {
+    refreshPage?.call();
+  }
+
   Timer? countdownTimer;
   var waktu = 0.obs;
   var jam = "00".obs;
@@ -66,6 +73,7 @@ class BankSoalController extends GetxController {
     soalIndex.value = index;
     restoreJawaban();
     isLast(false);
+    refreshUI();
   }
 
   void resumeTimer(int idSession) {
@@ -193,6 +201,7 @@ class BankSoalController extends GetxController {
           isLast(true);
         }
 
+        refreshUI();
         return isLanjut.value;
       } else {
         return false;
@@ -211,6 +220,8 @@ class BankSoalController extends GetxController {
 
     restoreJawaban();
 
+    refreshUI();
+
     return true;
   }
 
@@ -220,6 +231,7 @@ class BankSoalController extends GetxController {
     restoreJawaban();
 
     isLast(false);
+    refreshUI();
 
     return true;
   }

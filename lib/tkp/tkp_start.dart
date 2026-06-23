@@ -40,6 +40,12 @@ class _TkpStartState extends State<TkpStart> {
 
     fetchSoal();
     startTimer();
+
+    _tkpController.refreshPage = () {
+      if (mounted) {
+        setState(() {});
+      }
+    };
   }
 
   @override

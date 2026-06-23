@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:Genzi/network/api.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class TkpController extends GetxController {
@@ -41,6 +42,12 @@ class TkpController extends GetxController {
   var navLoading = false.obs;
   var isDone = List.empty().obs;
 
+  VoidCallback? refreshPage;
+
+  void refreshUI() {
+    refreshPage?.call();
+  }
+
   // ignore: unused_field
   Timer? countdownTimer;
   var waktu = 0.obs;
@@ -56,7 +63,7 @@ class TkpController extends GetxController {
     if (body['success']) {
       navLoading(false);
       isDone.value = body['data'];
-      print(body);
+      
     }
   }
 
@@ -64,6 +71,7 @@ class TkpController extends GetxController {
     checkAnswer(idSession, idSoal);
     soalIndex.value = index;
     isLast(false);
+    refreshUI();
   }
 
   void stopTimer() {
@@ -235,8 +243,15 @@ class TkpController extends GetxController {
     }
   }
 
-  Future<bool> selanjutnya(int idSession, int idUser, int idSoal, String noSoal,
-      String jawabanUser, int statusJawaban, int model) async {
+  Future<bool> selanjutnya(
+    int idSession,
+    int idUser,
+    int idSoal,
+    String noSoal,
+    String jawabanUser,
+    int statusJawaban,
+    int model,
+  ) async {
     // ignore: unrelated_type_equality_checks
 
     if (pilihA == false &&
@@ -255,7 +270,7 @@ class TkpController extends GetxController {
         'no_soal': noSoal,
         'jawaban_user': jawabanUser,
         'status_jawaban': statusJawaban,
-        'waktu_selesai': waktu.value
+        'waktu_selesai': waktu.value,
       };
 
       var res = await Network().auth(data, '/tkp_answer');
@@ -273,7 +288,7 @@ class TkpController extends GetxController {
         if (model == 3) {
           isLast(true);
         }
-
+        refreshUI();
         return isLanjut.value;
       } else {
         return false;
@@ -281,8 +296,14 @@ class TkpController extends GetxController {
     }
   }
 
-  void TkpAnswer(int idSession, int idUser, int idSoal, String noSoal,
-      String jawabanUser, int statusJawaban) async {}
+  void TkpAnswer(
+    int idSession,
+    int idUser,
+    int idSoal,
+    String noSoal,
+    String jawabanUser,
+    int statusJawaban,
+  ) async {}
 
   bool lewati() {
     soalIndex.value = soalIndex.value + 1;
@@ -291,7 +312,7 @@ class TkpController extends GetxController {
     pilihC(false);
     pilihD(false);
     pilihE(false);
-    print(soalList[soalIndex.value].toString());
+    refreshUI();
     return true;
   }
 
@@ -303,6 +324,7 @@ class TkpController extends GetxController {
     pilihD(false);
     pilihE(false);
     isLast(false);
+    refreshUI();
     return true;
   }
 
@@ -370,12 +392,16 @@ class TkpController extends GetxController {
 
   // ignore: non_constant_identifier_names
   Future TkpReportAdd(
-      int idSoal, int idUser, String isiLaporan, String kategori) async {
+    int idSoal,
+    int idUser,
+    String isiLaporan,
+    String kategori,
+  ) async {
     var data = {
       'idSoal': idSoal,
       'idUser': idUser,
       'isiLaporan': isiLaporan,
-      'kategori': kategori
+      'kategori': kategori,
     };
 
     var res = await Network().auth(data, '/tryout_report_add');

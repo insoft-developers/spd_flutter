@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:Genzi/network/api.dart';
 import 'package:Genzi/tryout/tryout_selesai.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class TryoutController extends GetxController {
@@ -40,6 +41,12 @@ class TryoutController extends GetxController {
   var isLanjut = true.obs;
   var jawabanUser = "".obs;
   var isLast = false.obs;
+
+  VoidCallback? refreshPage;
+
+  void refreshUI() {
+    refreshPage?.call();
+  }
 
   // ignore: unused_field
   Timer? countdownTimer;
@@ -211,7 +218,7 @@ class TryoutController extends GetxController {
         if (model == 3) {
           isLast(true);
         }
-
+        refreshUI();
         return isLanjut.value;
       } else {
         return false;
@@ -236,9 +243,7 @@ class TryoutController extends GetxController {
     pilihD(false);
     pilihE(false);
 
-    print(jawabanUser.value);
-    print(savedAnswers);
-    print(userAnswers);
+   refreshUI();
 
     return true;
   }
@@ -248,12 +253,14 @@ class TryoutController extends GetxController {
     soalIndex.value = index;
     restoreJawaban();
     isLast(false);
+    refreshUI();
   }
 
   bool sebelumnya() {
     soalIndex.value = soalIndex.value - 1;
     restoreJawaban();
     isLast(false);
+    refreshUI();
     return true;
   }
 

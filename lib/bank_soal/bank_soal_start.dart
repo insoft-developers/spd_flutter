@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_interpolation_to_compose_strings
+
 import 'package:Genzi/bank_soal/bank_soal_controller.dart';
 import 'package:Genzi/bank_soal/bank_soal_report.dart';
 import 'package:Genzi/bank_soal/bank_soal_selesai.dart';
@@ -14,11 +16,10 @@ class BankSoalStart extends StatefulWidget {
   int idSession;
   int idUser;
   BankSoalStart(
-      {Key? key,
+      {super.key,
       required this.dataList,
       required this.idSession,
-      required this.idUser})
-      : super(key: key);
+      required this.idUser});
 
   @override
   State<BankSoalStart> createState() => _BankSoalStartState();
@@ -38,6 +39,12 @@ class _BankSoalStartState extends State<BankSoalStart> {
 
     fetchSoal();
     startTimer();
+
+    _bankSoalController.refreshPage = () {
+      if (mounted) {
+        setState(() {});
+      }
+    };
   }
 
   @override
@@ -145,6 +152,7 @@ class _BankSoalStartState extends State<BankSoalStart> {
               Icons.refresh,
             )),
       ),
+      // ignore: deprecated_member_use
       body: WillPopScope(
         onWillPop: _onWillPop,
         child: Stack(
@@ -183,11 +191,7 @@ class _BankSoalStartState extends State<BankSoalStart> {
                             ),
                             Obx(
                               () => Text(
-                                  _bankSoalController.jam.value +
-                                      ":" +
-                                      _bankSoalController.menit.value +
-                                      ":" +
-                                      _bankSoalController.detik.value,
+                                  "${_bankSoalController.jam.value}:${_bankSoalController.menit.value}:${_bankSoalController.detik.value}",
                                   style: const TextStyle(
                                     fontFamily: 'PoppinsBold',
                                     fontSize: 14,
@@ -256,13 +260,12 @@ class _BankSoalStartState extends State<BankSoalStart> {
                                       left: 10, right: 10, top: 10),
                                   padding: const EdgeInsets.only(
                                       top: 10, bottom: 10),
+                                  // ignore: sort_child_properties_last
                                   child: Obx(
                                     () => Text(
-                                      "Soal No. " +
-                                          _bankSoalController.soalList[
+                                      "Soal No. ${_bankSoalController.soalList[
                                                   _bankSoalController.soalIndex
-                                                      .value]['no_soal']
-                                              .toString(),
+                                                      .value]['no_soal']}",
                                       textAlign: TextAlign.center,
                                       style: const TextStyle(
                                           fontFamily: 'Poppins'),
@@ -307,28 +310,22 @@ class _BankSoalStartState extends State<BankSoalStart> {
                                                   child: InkWell(
                                                     onTap: () {
                                                       Get.to(() => FotoView(
-                                                          gambar: Contants
-                                                                  .BASE_URL +
-                                                              'public/images/banksoal/' +
-                                                              _bankSoalController
+                                                          gambar: '${Contants
+                                                                  .BASE_URL}public/images/banksoal/${_bankSoalController
                                                                   .soalList[
                                                                       _bankSoalController
                                                                           .soalIndex
                                                                           .value]
                                                                       [
-                                                                      'gambar_soal']
-                                                                  .toString()));
+                                                                      'gambar_soal']}'));
                                                     },
                                                     child: Image.network(
-                                                      Contants.BASE_URL +
-                                                          'public/images/banksoal/' +
-                                                          _bankSoalController
+                                                      '${Contants.BASE_URL}public/images/banksoal/${_bankSoalController
                                                               .soalList[
                                                                   _bankSoalController
                                                                       .soalIndex
                                                                       .value][
-                                                                  'gambar_soal']
-                                                              .toString(),
+                                                                  'gambar_soal']}',
                                                       fit: BoxFit.cover,
                                                     ),
                                                   ),
@@ -400,9 +397,9 @@ class _BankSoalStartState extends State<BankSoalStart> {
                                                                 ['gambar_a'] !=
                                                             null
                                                         ? CachedNetworkImage(
-                                                            imageUrl: Contants
-                                                                    .BASE_URL +
-                                                                'public/images/banksoal/' +
+                                                            // ignore: prefer_interpolation_to_compose_strings
+                                                            imageUrl: '${Contants
+                                                                    .BASE_URL}public/images/banksoal/' +
                                                                 _bankSoalController
                                                                         .soalList[
                                                                     _bankSoalController
@@ -487,9 +484,9 @@ class _BankSoalStartState extends State<BankSoalStart> {
                                                                 ['gambar_b'] !=
                                                             null
                                                         ? CachedNetworkImage(
-                                                            imageUrl: Contants
-                                                                    .BASE_URL +
-                                                                'public/images/banksoal/' +
+                                                            // ignore: prefer_interpolation_to_compose_strings
+                                                            imageUrl: '${Contants
+                                                                    .BASE_URL}public/images/banksoal/' +
                                                                 _bankSoalController
                                                                         .soalList[
                                                                     _bankSoalController
@@ -574,9 +571,8 @@ class _BankSoalStartState extends State<BankSoalStart> {
                                                                 ['gambar_c'] !=
                                                             null
                                                         ? CachedNetworkImage(
-                                                            imageUrl: Contants
-                                                                    .BASE_URL +
-                                                                'public/images/banksoal/' +
+                                                            imageUrl: '${Contants
+                                                                    .BASE_URL}public/images/banksoal/' +
                                                                 _bankSoalController
                                                                         .soalList[
                                                                     _bankSoalController
@@ -661,9 +657,8 @@ class _BankSoalStartState extends State<BankSoalStart> {
                                                                 ['gambar_d'] !=
                                                             null
                                                         ? CachedNetworkImage(
-                                                            imageUrl: Contants
-                                                                    .BASE_URL +
-                                                                'public/images/banksoal/' +
+                                                            imageUrl: '${Contants
+                                                                    .BASE_URL}public/images/banksoal/' +
                                                                 _bankSoalController
                                                                         .soalList[
                                                                     _bankSoalController
@@ -748,9 +743,8 @@ class _BankSoalStartState extends State<BankSoalStart> {
                                                                 ['gambar_e'] !=
                                                             null
                                                         ? CachedNetworkImage(
-                                                            imageUrl: Contants
-                                                                    .BASE_URL +
-                                                                'public/images/banksoal/' +
+                                                            imageUrl: '${Contants
+                                                                    .BASE_URL}public/images/banksoal/' +
                                                                 _bankSoalController
                                                                         .soalList[
                                                                     _bankSoalController
@@ -1130,7 +1124,7 @@ class HexColor extends Color {
   static int _getColorFromHex(String hexColor) {
     hexColor = hexColor.toUpperCase().replaceAll("#", "");
     if (hexColor.length == 6) {
-      hexColor = "FF" + hexColor;
+      hexColor = "FF$hexColor";
     }
     return int.parse(hexColor, radix: 16);
   }

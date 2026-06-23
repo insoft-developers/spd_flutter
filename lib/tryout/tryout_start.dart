@@ -40,6 +40,12 @@ class _TryoutStartState extends State<TryoutStart> {
 
     fetchSoal();
     startTimer();
+
+    _tryoutController.refreshPage = () {
+      if (mounted) {
+        setState(() {});
+      }
+    };
   }
 
   @override
@@ -430,6 +436,7 @@ class _TryoutStartState extends State<TryoutStart> {
                                         borderRadius: BorderRadius.circular(10),
                                       ),
                                       child: Row(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           Text(
                                             'A. ',
@@ -521,6 +528,7 @@ class _TryoutStartState extends State<TryoutStart> {
                                         borderRadius: BorderRadius.circular(10),
                                       ),
                                       child: Row(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           Text(
                                             'B. ',
@@ -612,6 +620,7 @@ class _TryoutStartState extends State<TryoutStart> {
                                         borderRadius: BorderRadius.circular(10),
                                       ),
                                       child: Row(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           Text(
                                             'C. ',
@@ -703,6 +712,7 @@ class _TryoutStartState extends State<TryoutStart> {
                                         borderRadius: BorderRadius.circular(10),
                                       ),
                                       child: Row(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           Text(
                                             'D. ',
@@ -800,6 +810,7 @@ class _TryoutStartState extends State<TryoutStart> {
                                         borderRadius: BorderRadius.circular(10),
                                       ),
                                       child: Row(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           Text(
                                             'E. ',
