@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:Genzi/network/api.dart';
+import 'package:Genzi/tka/tka_selesai.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class TkaController extends GetxController {
@@ -46,12 +48,20 @@ class TkaController extends GetxController {
   var jawabanUser = "".obs;
   var isLast = false.obs;
 
+  VoidCallback? refreshPage;
+
+  final TextEditingController isianController = TextEditingController();
+
   // ignore: unused_field
   Timer? countdownTimer;
   var waktu = 0.obs;
   var jam = "00".obs;
   var menit = "00".obs;
   var detik = "00".obs;
+
+  void refreshUI() {
+    refreshPage?.call();
+  }
 
   void answerSetup(int idSession) async {
     navLoading(true);
@@ -83,7 +93,7 @@ class TkaController extends GetxController {
       final seconds = myDuration.inSeconds - reduceSecondsBy;
       if (seconds < 0) {
         countdownTimer!.cancel();
-        // Get.to(() => TryoutSelesai(idSession: idSession));
+        Get.to(() => TkaSelesai(idSession: idSession));
       } else {
         myDuration = Duration(seconds: seconds);
         String strDigits(int n) => n.toString().padLeft(2, '0');
@@ -111,7 +121,7 @@ class TkaController extends GetxController {
       final seconds = myDuration.inSeconds - reduceSecondsBy;
       if (seconds < 0) {
         countdownTimer!.cancel();
-        // Get.to(() => TryoutSelesai(idSession: idSession));
+        Get.to(() => TkaSelesai(idSession: idSession));
       } else {
         myDuration = Duration(seconds: seconds);
         String strDigits(int n) => n.toString().padLeft(2, '0');
@@ -157,11 +167,20 @@ class TkaController extends GetxController {
   }
 
   void restoreJawaban() {
+    // reset semua state
     pilihA(false);
     pilihB(false);
     pilihC(false);
     pilihD(false);
     pilihE(false);
+
+    pernyataanA('');
+    pernyataanB('');
+    pernyataanC('');
+    pernyataanD('');
+    pernyataanE('');
+
+    isianController.clear();
 
     var currentAnswer = savedAnswers[soalIndex.value];
 
@@ -170,13 +189,56 @@ class TkaController extends GetxController {
       return;
     }
 
-    List<String> answers = currentAnswer.split(',');
+    final questionModel = soalList[soalIndex.value]['question_model'];
 
-    pilihA(answers.contains('a'));
-    pilihB(answers.contains('b'));
-    pilihC(answers.contains('c'));
-    pilihD(answers.contains('d'));
-    pilihE(answers.contains('e'));
+    // Pilihan Ganda
+    if (questionModel == 1) {
+      pilihA(currentAnswer == 'a');
+      pilihB(currentAnswer == 'b');
+      pilihC(currentAnswer == 'c');
+      pilihD(currentAnswer == 'd');
+      pilihE(currentAnswer == 'e');
+    }
+    // Multiple Option
+    else if (questionModel == 2) {
+      List<String> answers = currentAnswer.split('|');
+
+      pilihA(answers.contains('a'));
+      pilihB(answers.contains('b'));
+      pilihC(answers.contains('c'));
+      pilihD(answers.contains('d'));
+      pilihE(answers.contains('e'));
+    }
+    // Benar / Salah
+    else if (questionModel == 3) {
+      List<String> answers = currentAnswer.split('|');
+
+      for (var item in answers) {
+        if (item.startsWith('a_')) {
+          pernyataanA(item.split('_')[1]);
+        }
+
+        if (item.startsWith('b_')) {
+          pernyataanB(item.split('_')[1]);
+        }
+
+        if (item.startsWith('c_')) {
+          pernyataanC(item.split('_')[1]);
+        }
+
+        if (item.startsWith('d_')) {
+          pernyataanD(item.split('_')[1]);
+        }
+
+        if (item.startsWith('e_')) {
+          pernyataanE(item.split('_')[1]);
+        }
+      }
+    }
+    // Isian Singkat
+    else if (questionModel == 4) {
+      isianController.text = currentAnswer;
+    }
 
     jawabanUser.value = currentAnswer;
   }
@@ -196,7 +258,7 @@ class TkaController extends GetxController {
     int model,
   ) async {
     // ignore: unrelated_type_equality_checks
-   
+    debugPrint(jawabanUser.value);
 
     if (jawabanUser.value.isEmpty) {
       isLanjut(false);
@@ -216,7 +278,7 @@ class TkaController extends GetxController {
 
       var res = await Network().auth(data, '/tka_make_answer');
       var body = await json.decode(res.body);
-      
+
       if (body['success']) {
         savedAnswers[soalIndex.value] = jawabanUser.value;
 
@@ -228,7 +290,7 @@ class TkaController extends GetxController {
         if (model == 3) {
           isLast(true);
         }
-
+        refreshUI();
         return isLanjut.value;
       } else {
         return false;
@@ -252,6 +314,7 @@ class TkaController extends GetxController {
     pilihC(false);
     pilihD(false);
     pilihE(false);
+    refreshUI();
     return true;
   }
 
@@ -260,12 +323,14 @@ class TkaController extends GetxController {
     soalIndex.value = index;
     restoreJawaban();
     isLast(false);
+    refreshUI();
   }
 
   bool sebelumnya() {
     soalIndex.value = soalIndex.value - 1;
     restoreJawaban();
     isLast(false);
+    refreshUI();
     return true;
   }
 
@@ -290,7 +355,6 @@ class TkaController extends GetxController {
       soalList.value = body['data'];
       userAnswers.value = List.generate(soalList.length, (_) => '');
       savedAnswers.value = List.generate(soalList.length, (_) => '');
-      
     }
   }
 
@@ -394,5 +458,27 @@ class TkaController extends GetxController {
     }
 
     jawabanUser.value = hasil.join('|');
+  }
+
+  Future reportAdd(
+    int idSoal,
+    int idUser,
+    String isiLaporan,
+    String kategori,
+  ) async {
+    var data = {
+      'idSoal': idSoal,
+      'idUser': idUser,
+      'isiLaporan': isiLaporan,
+      'kategori': kategori,
+    };
+
+    var res = await Network().auth(data, '/tryout_report_add');
+    var body = await json.decode(res.body);
+    if (body['success']) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }

@@ -6,7 +6,8 @@ import 'package:Genzi/tka/model_pertanyaan/isian_singkat.dart';
 import 'package:Genzi/tka/model_pertanyaan/multi_option.dart';
 import 'package:Genzi/tka/model_pertanyaan/pilihan_ganda.dart';
 import 'package:Genzi/tka/tka_controller.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:Genzi/tka/tka_report.dart';
+import 'package:Genzi/tka/tka_selesai.dart';
 import 'package:flutter/material.dart';
 
 // ignore: unused_import
@@ -42,6 +43,11 @@ class _TkaStartState extends State<TkaStart> {
 
     fetchSoal();
     startTimer();
+    controller.refreshPage = () {
+      if (mounted) {
+        setState(() {});
+      }
+    };
   }
 
   @override
@@ -233,24 +239,20 @@ class _TkaStartState extends State<TkaStart> {
                         ),
                         onPressed: () {
                           controller.stopTimer();
-                          // Get.to(
-                          //   () => TryoutReport(
-                          //     idSoal:
-                          //         controller.soalList[controller
-                          //             .soalIndex
-                          //             .value]['id'],
-                          //     noSoal:
-                          //         controller.soalList[controller
-                          //             .soalIndex
-                          //             .value]['no_soal'],
-                          //     soal:
-                          //         controller.soalList[controller
-                          //             .soalIndex
-                          //             .value]['soal'],
-                          //     idSession: widget.idSession,
-                          //     idUser: widget.idUser,
-                          //   ),
-                          // );
+                          Get.to(
+                            () => TkaReport(
+                              idSoal: controller
+                                  .soalList[controller.soalIndex.value]['id'],
+                              noSoal:
+                                  controller.soalList[controller
+                                      .soalIndex
+                                      .value]['no_soal'],
+                              soal: controller
+                                  .soalList[controller.soalIndex.value]['soal'],
+                              idSession: widget.idSession,
+                              idUser: widget.idUser,
+                            ),
+                          );
                         },
                         child: Row(
                           children: const [
@@ -273,26 +275,34 @@ class _TkaStartState extends State<TkaStart> {
                         if (controller.soalIndex.value == index) {
                           return Obx(() {
                             String modelSoal = '';
+                            String helpText = '';
                             if (controller.soalList[controller
                                     .soalIndex
                                     .value]['question_model'] ==
                                 1) {
                               modelSoal = 'Pilihan Ganda';
+                              helpText = 'Pilihlah satu jawaban yang benar';
                             } else if (controller.soalList[controller
                                     .soalIndex
                                     .value]['question_model'] ==
                                 2) {
                               modelSoal = 'Multiple Option';
+                              helpText =
+                                  'Pilihlah satu atau lebih jawaban yang benar';
                             } else if (controller.soalList[controller
                                     .soalIndex
                                     .value]['question_model'] ==
                                 3) {
                               modelSoal = 'Pernyataan Benar atau Salah';
+                              helpText =
+                                  'Pilih apakah pernyataan berikut benar atau salah';
                             } else if (controller.soalList[controller
                                     .soalIndex
                                     .value]['question_model'] ==
                                 4) {
                               modelSoal = 'Isian Singkat';
+                              helpText =
+                                  'Isilah pertanyaan tersebut dengan benar, typo akan dianggap salah, huruf besar dan kecil dianggap sama';
                             }
                             return Column(
                               mainAxisAlignment: MainAxisAlignment.start,
@@ -418,9 +428,21 @@ class _TkaStartState extends State<TkaStart> {
                                     ],
                                   ),
                                 ),
-                                const Text(
-                                  'Pilih Jawaban Anda',
-                                  style: TextStyle(fontFamily: 'Poppins'),
+                                Container(
+                                  margin: const EdgeInsets.fromLTRB(
+                                    10,
+                                    8,
+                                    10,
+                                    8,
+                                  ),
+                                  child: Text(
+                                    helpText,
+                                    style: TextStyle(
+                                      fontFamily: 'Poppins',
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                                 ),
 
                                 Obx(() {
@@ -431,13 +453,25 @@ class _TkaStartState extends State<TkaStart> {
 
                                   switch (questionModel) {
                                     case 1:
-                                      return BuildPilihanGanda(warnaJawaban: warnaJawaban, warnaTulisanJawaban: warnaTulisanJawaban,);
+                                      return BuildPilihanGanda(
+                                        warnaJawaban: warnaJawaban,
+                                        warnaTulisanJawaban:
+                                            warnaTulisanJawaban,
+                                      );
 
                                     case 2:
-                                      return BuildMultiOptions(warnaJawaban: warnaJawaban, warnaTulisanJawaban: warnaTulisanJawaban,);
+                                      return BuildMultiOptions(
+                                        warnaJawaban: warnaJawaban,
+                                        warnaTulisanJawaban:
+                                            warnaTulisanJawaban,
+                                      );
 
                                     case 3:
-                                      return BuildBenarSalah(warnaJawaban: warnaJawaban, warnaTulisanJawaban: warnaTulisanJawaban,);
+                                      return BuildBenarSalah(
+                                        warnaJawaban: warnaJawaban,
+                                        warnaTulisanJawaban:
+                                            warnaTulisanJawaban,
+                                      );
 
                                     case 4:
                                       return BuildIsianSingkat();
@@ -549,7 +583,7 @@ class _TkaStartState extends State<TkaStart> {
                                   controller.soalList[controller
                                       .soalIndex
                                       .value]['no_soal'],
-                                  
+
                                   1,
                                   controller.soalIndex.value ==
                                           controller.soalList.length - 1
@@ -633,11 +667,7 @@ class _TkaStartState extends State<TkaStart> {
     Widget continueButton = TextButton(
       child: const Text("Ya", style: TextStyle(fontFamily: 'PoppinsBold')),
       onPressed: () {
-        if (controller.pilihA.value == false &&
-            controller.pilihB.value == false &&
-            controller.pilihC.value == false &&
-            controller.pilihD.value == false &&
-            controller.pilihE.value == false) {
+        if (controller.jawabanUser.value.isEmpty) {
           showNotif(context);
         } else {
           controller
@@ -646,14 +676,14 @@ class _TkaStartState extends State<TkaStart> {
                 widget.idUser,
                 controller.soalList[controller.soalIndex.value]['id'],
                 controller.soalList[controller.soalIndex.value]['no_soal'],
-               
+
                 1,
                 2,
               )
               .then((value) {
                 if (value) {
                   controller.stopTimer();
-                  // Get.to(() => TryoutSelesai(idSession: widget.idSession));
+                  Get.to(() => TkaSelesai(idSession: widget.idSession));
                 }
               });
         }
@@ -666,7 +696,7 @@ class _TkaStartState extends State<TkaStart> {
         style: TextStyle(fontFamily: 'PoppinsBold'),
       ),
       content: const Text(
-        "Anda Ingin Mengakhiri Sesi Try Out Ini ?",
+        "Anda Ingin Mengakhiri Sesi TKA Ini ?",
         style: TextStyle(fontFamily: 'Poppins'),
       ),
       actions: [cancelButton, continueButton],
@@ -726,7 +756,7 @@ class _TkaStartState extends State<TkaStart> {
       ),
       onPressed: () {
         controller.stopTimer();
-        // Get.to(() => TryoutSelesai(idSession: widget.idSession));
+        Get.to(() => TkaSelesai(idSession: widget.idSession));
       },
     );
 
@@ -770,7 +800,7 @@ class _TkaStartState extends State<TkaStart> {
               TextButton(
                 onPressed: () {
                   controller.stopTimer();
-                  // Get.to(TryoutSelesai(idSession: widget.idSession));
+                  Get.to(TkaSelesai(idSession: widget.idSession));
                 },
                 child: const Text(
                   'Ya',
@@ -788,7 +818,7 @@ class HexColor extends Color {
   static int _getColorFromHex(String hexColor) {
     hexColor = hexColor.toUpperCase().replaceAll("#", "");
     if (hexColor.length == 6) {
-      hexColor = "FF" + hexColor;
+      hexColor = "FF$hexColor";
     }
     return int.parse(hexColor, radix: 16);
   }

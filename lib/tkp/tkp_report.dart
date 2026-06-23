@@ -1,3 +1,4 @@
+import 'package:Genzi/components/html_latex_widget.dart';
 import 'package:Genzi/tkp/tkp_controller.dart';
 import 'package:flutter/material.dart';
 // ignore: unused_import
@@ -40,15 +41,13 @@ class _TkpReportState extends State<TkpReport> {
           children: [
             Container(
               margin: const EdgeInsets.fromLTRB(10, 30, 10, 10),
-              child: Text(
-                "Soal No. " +
-                    widget.noSoal.toString() +
-                    " - \n" +
-                    widget.soal.toString(),
-                style: const TextStyle(
-                    fontFamily: 'PoppinsBold',
-                    fontSize: 16,
-                    color: Colors.black54),
+              child: HtmlLatexWidget(
+                html: "Soal No. ${widget.noSoal}<br>${widget.soal}",
+                textStyle: TextStyle(
+                  fontSize: 16,
+                  color: Colors.black54,
+                  fontFamily: 'Poppins',
+                ),
               ),
             ),
             Container(

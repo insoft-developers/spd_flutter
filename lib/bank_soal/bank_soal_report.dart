@@ -1,4 +1,5 @@
 import 'package:Genzi/bank_soal/bank_soal_controller.dart';
+import 'package:Genzi/components/html_latex_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -39,15 +40,13 @@ class _BankSoalReportState extends State<BankSoalReport> {
           children: [
             Container(
               margin: const EdgeInsets.fromLTRB(10, 30, 10, 10),
-              child: Text(
-                "Soal No. " +
-                    widget.noSoal.toString() +
-                    " - \n" +
-                    widget.soal.toString(),
-                style: const TextStyle(
-                    fontFamily: 'PoppinsBold',
-                    fontSize: 16,
-                    color: Colors.black54),
+              child: HtmlLatexWidget(
+                html: "Soal No. ${widget.noSoal}<br>${widget.soal}",
+                textStyle: TextStyle(
+                  fontSize: 16,
+                  color: Colors.black54,
+                  fontFamily: 'Poppins',
+                ),
               ),
             ),
             Container(
@@ -145,7 +144,7 @@ class _BankSoalReportState extends State<BankSoalReport> {
           context: context,
           builder: (context) => AlertDialog(
             title: const Text(
-              'Kembali Ke Tryout ?',
+              'Kembali Ke Bank Soal ?',
               textAlign: TextAlign.center,
               style: TextStyle(
                   fontFamily: 'PoppinsBold',

@@ -1,5 +1,7 @@
 import 'package:Genzi/components/html_latex_widget.dart';
+import 'package:Genzi/constants/constants.dart';
 import 'package:Genzi/tka/tka_controller.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -25,38 +27,54 @@ class BuildBenarSalah extends StatelessWidget {
           buildPernyataan(
             "1",
             soal['jawaban_a']?.toString() ?? '',
-            controller.pernyataanA,controller
+            controller.pernyataanA,
+            controller,
+            soal['gambar_a']?.toString(),
           ),
 
           buildPernyataan(
             "2",
             soal['jawaban_b']?.toString() ?? '',
-            controller.pernyataanB,controller,
+            controller.pernyataanB,
+            controller,
+            soal['gambar_b']?.toString(),
           ),
 
           buildPernyataan(
             "3",
             soal['jawaban_c']?.toString() ?? '',
-            controller.pernyataanC,controller,
+            controller.pernyataanC,
+            controller,
+            soal['gambar_c']?.toString(),
           ),
 
           buildPernyataan(
             "4",
             soal['jawaban_d']?.toString() ?? '',
-            controller.pernyataanD,controller,
+            controller.pernyataanD,
+            controller,
+            soal['gambar_d']?.toString(),
           ),
 
           buildPernyataan(
             "5",
             soal['jawaban_e']?.toString() ?? '',
-            controller.pernyataanE,controller,
+            controller.pernyataanE,
+            controller,
+            soal['gambar_e']?.toString(),
           ),
         ],
       );
     });
   }
 
-  Widget buildPernyataan(String nomor, String text, RxString value, TkaController controller) {
+  Widget buildPernyataan(
+    String nomor,
+    String text,
+    RxString value,
+    TkaController controller,
+    String? gambar,
+  ) {
     if (text.trim().isEmpty) {
       return const SizedBox();
     }
@@ -80,6 +98,11 @@ class BuildBenarSalah extends StatelessWidget {
           ),
 
           const SizedBox(height: 8),
+
+          if (gambar != null && gambar.isNotEmpty && gambar != 'null')
+            CachedNetworkImage(
+              imageUrl: '${Contants.BASE_URL}public/images/question/$gambar',
+            ),
 
           HtmlLatexWidget(
             html: text,
