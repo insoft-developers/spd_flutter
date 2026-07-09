@@ -26,8 +26,10 @@ class TryoutStart extends StatefulWidget {
   State<TryoutStart> createState() => _TryoutStartState();
 }
 
-class _TryoutStartState extends State<TryoutStart> {
+class _TryoutStartState extends State<TryoutStart> with WidgetsBindingObserver {
   final _tryoutController = Get.find<TryoutController>();
+  bool _terdeteksiKeluar = false;
+  bool _ujianSudahSelesai = false;
 
   Future<void> secureScreen() async {
     // await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
@@ -35,6 +37,8 @@ class _TryoutStartState extends State<TryoutStart> {
 
   @override
   void initState() {
+    WidgetsBinding.instance.addObserver(this);
+
     secureScreen();
     super.initState();
 
@@ -49,8 +53,10 @@ class _TryoutStartState extends State<TryoutStart> {
   }
 
   @override
-  Future<void> dispose() async {
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+
     // await FlutterWindowManager.clearFlags(FlutterWindowManager.FLAG_SECURE);
   }
 
@@ -63,6 +69,35 @@ class _TryoutStartState extends State<TryoutStart> {
 
   void fetchSoal() {
     _tryoutController.fetchTryoutDetail(widget.dataList['id'].toString());
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+
+    if (_ujianSudahSelesai) return;
+
+    // Saat user tekan Home, Recent App, atau aplikasi masuk background
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.hidden) {
+      _terdeteksiKeluar = true;
+    }
+
+    // Saat user masuk lagi ke aplikasi, langsung selesaikan ujian
+    if (state == AppLifecycleState.resumed && _terdeteksiKeluar) {
+      _selesaikanUjianKarenaKeluarAplikasi();
+    }
+  }
+
+  void _selesaikanUjianKarenaKeluarAplikasi() {
+    if (!mounted || _ujianSudahSelesai) return;
+
+    _ujianSudahSelesai = true;
+    _terdeteksiKeluar = false;
+
+    _tryoutController.stopTimer();
+
+    Get.off(() => TryoutSelesai(idSession: widget.idSession));
   }
 
   @override
@@ -327,7 +362,6 @@ class _TryoutStartState extends State<TryoutStart> {
                                 ),
                                 child: Column(
                                   children: [
-                                    
                                     Obx(
                                       () => HtmlLatexWidget(
                                         html: _tryoutController
@@ -387,11 +421,12 @@ class _TryoutStartState extends State<TryoutStart> {
                                     ),
                                     Obx(
                                       () => HtmlLatexWidget(
-                                        html:_tryoutController
-                                            .soalList[_tryoutController
+                                        html:
+                                            _tryoutController
+                                                .soalList[_tryoutController
                                                 .soalIndex
-                                                .value]['soal_bawah'] 
-                                            ?? '',
+                                                .value]['soal_bawah'] ??
+                                            '',
                                         textStyle: TextStyle(
                                           fontFamily: 'Poppins',
                                           color: warnaTulisan,
@@ -436,7 +471,8 @@ class _TryoutStartState extends State<TryoutStart> {
                                         borderRadius: BorderRadius.circular(10),
                                       ),
                                       child: Row(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Text(
                                             'A. ',
@@ -528,7 +564,8 @@ class _TryoutStartState extends State<TryoutStart> {
                                         borderRadius: BorderRadius.circular(10),
                                       ),
                                       child: Row(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Text(
                                             'B. ',
@@ -565,7 +602,7 @@ class _TryoutStartState extends State<TryoutStart> {
                                                 ),
                                                 Obx(
                                                   () => HtmlLatexWidget(
-                                                    html:_tryoutController
+                                                    html: _tryoutController
                                                         .soalList[_tryoutController
                                                             .soalIndex
                                                             .value]['jawaban_b']
@@ -620,7 +657,8 @@ class _TryoutStartState extends State<TryoutStart> {
                                         borderRadius: BorderRadius.circular(10),
                                       ),
                                       child: Row(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Text(
                                             'C. ',
@@ -657,7 +695,7 @@ class _TryoutStartState extends State<TryoutStart> {
                                                 ),
                                                 Obx(
                                                   () => HtmlLatexWidget(
-                                                    html:_tryoutController
+                                                    html: _tryoutController
                                                         .soalList[_tryoutController
                                                             .soalIndex
                                                             .value]['jawaban_c']
@@ -712,7 +750,8 @@ class _TryoutStartState extends State<TryoutStart> {
                                         borderRadius: BorderRadius.circular(10),
                                       ),
                                       child: Row(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Text(
                                             'D. ',
@@ -750,7 +789,7 @@ class _TryoutStartState extends State<TryoutStart> {
                                                 ),
                                                 Obx(
                                                   () => HtmlLatexWidget(
-                                                    html:_tryoutController
+                                                    html: _tryoutController
                                                         .soalList[_tryoutController
                                                             .soalIndex
                                                             .value]['jawaban_d']
@@ -810,7 +849,8 @@ class _TryoutStartState extends State<TryoutStart> {
                                         borderRadius: BorderRadius.circular(10),
                                       ),
                                       child: Row(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Text(
                                             'E. ',
@@ -848,7 +888,7 @@ class _TryoutStartState extends State<TryoutStart> {
                                                 ),
                                                 Obx(
                                                   () => HtmlLatexWidget(
-                                                    html:_tryoutController
+                                                    html: _tryoutController
                                                         .soalList[_tryoutController
                                                             .soalIndex
                                                             .value]['jawaban_e']
@@ -1083,6 +1123,7 @@ class _TryoutStartState extends State<TryoutStart> {
               )
               .then((value) {
                 if (value) {
+                  _ujianSudahSelesai = true;
                   _tryoutController.stopTimer();
                   Get.to(() => TryoutSelesai(idSession: widget.idSession));
                 }
@@ -1156,6 +1197,7 @@ class _TryoutStartState extends State<TryoutStart> {
         style: TextStyle(fontFamily: 'PoppinsBold'),
       ),
       onPressed: () {
+        _ujianSudahSelesai = true;
         _tryoutController.stopTimer();
         Get.to(() => TryoutSelesai(idSession: widget.idSession));
       },

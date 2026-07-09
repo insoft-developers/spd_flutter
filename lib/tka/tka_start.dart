@@ -29,8 +29,10 @@ class TkaStart extends StatefulWidget {
   State<TkaStart> createState() => _TkaStartState();
 }
 
-class _TkaStartState extends State<TkaStart> {
+class _TkaStartState extends State<TkaStart> with WidgetsBindingObserver {
   final controller = Get.find<TkaController>();
+  bool _terdeteksiKeluar = false;
+  bool _ujianSudahSelesai = false;
 
   Future<void> secureScreen() async {
     // await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
@@ -38,6 +40,7 @@ class _TkaStartState extends State<TkaStart> {
 
   @override
   void initState() {
+    WidgetsBinding.instance.addObserver(this);
     secureScreen();
     super.initState();
 
@@ -51,10 +54,41 @@ class _TkaStartState extends State<TkaStart> {
   }
 
   @override
-  Future<void> dispose() async {
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+
     // await FlutterWindowManager.clearFlags(FlutterWindowManager.FLAG_SECURE);
   }
+
+  @override
+void didChangeAppLifecycleState(AppLifecycleState state) {
+  super.didChangeAppLifecycleState(state);
+
+  if (_ujianSudahSelesai) return;
+
+  // Saat user tekan Home, Recent App, atau aplikasi masuk background
+  if (state == AppLifecycleState.paused ||
+      state == AppLifecycleState.hidden) {
+    _terdeteksiKeluar = true;
+  }
+
+  // Saat user masuk lagi ke aplikasi, langsung selesaikan ujian
+  if (state == AppLifecycleState.resumed && _terdeteksiKeluar) {
+    _selesaikanUjianKarenaKeluarAplikasi();
+  }
+}
+
+void _selesaikanUjianKarenaKeluarAplikasi() {
+  if (!mounted || _ujianSudahSelesai) return;
+
+  _ujianSudahSelesai = true;
+  _terdeteksiKeluar = false;
+
+  controller.stopTimer();
+
+  Get.off(() => TkaSelesai(idSession: widget.idSession));
+}
 
   void startTimer() {
     controller.startTimer(widget.dataList['time_limit'], widget.idSession);
@@ -682,6 +716,7 @@ class _TkaStartState extends State<TkaStart> {
               )
               .then((value) {
                 if (value) {
+                  _ujianSudahSelesai = true;
                   controller.stopTimer();
                   Get.to(() => TkaSelesai(idSession: widget.idSession));
                 }
@@ -755,6 +790,7 @@ class _TkaStartState extends State<TkaStart> {
         style: TextStyle(fontFamily: 'PoppinsBold'),
       ),
       onPressed: () {
+        _ujianSudahSelesai = true;
         controller.stopTimer();
         Get.to(() => TkaSelesai(idSession: widget.idSession));
       },
